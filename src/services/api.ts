@@ -72,12 +72,22 @@ class ApiService {
       sentAt: new Date().toISOString()
     };
     
-    // Store notification (in real app, this would be sent to backend)
+    // Store notification and send email
     const existingNotifications = JSON.parse(localStorage.getItem('customer_notifications') || '[]');
     existingNotifications.push(fullNotification);
     localStorage.setItem('customer_notifications', JSON.stringify(existingNotifications));
     
-    console.log('Notification sent via API:', fullNotification);
+    // Send email with referral link
+    if (notification.referralLink) {
+      await this.sendEmail(
+        notification.customerId + '@email.com',
+        'Special Offer Just for You!',
+        `${notification.message}\n\nUse your referral link: ${notification.referralLink}`,
+        notification.referralLink
+      );
+    }
+    
+    console.log('Notification and email sent via API:', fullNotification);
     return true;
   }
 
